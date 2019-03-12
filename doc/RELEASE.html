@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <title>GXemul: Release notes</title>
+  <meta name="robots" content="noarchive,nofollow,noindex">
+</head>
+<body style="font-family : sans-serif;">
+
+<!-- 10 lines header.  -->
+
+<h1>Release notes for GXemul 0.6.1</h1>
+
+<p><i>Copyright (C) 2003-2018  Anders Gavare</i>
+
+<p><br>GXemul is a framework for full-system computer architecture emulation. 
+Several processor architectures and machine types have been implemented. 
+It is working well enough to allow <a href="guestoses.html">unmodified
+"guest" operating systems to run inside the emulator</a>,
+as if they were running on real hardware.
+
+<p>The emulator emulates (networks of) real machines. The machines may consist
+of ARM, MIPS, Motorola 88K, PowerPC, and SuperH processors, and various 
+surrounding hardware components such as framebuffers, busses, interrupt 
+controllers, ethernet controllers, disk controllers, and serial port 
+controllers.
+
+<p>The <a href="index.html">documentation</a> lists the machines and
+guest operating systems that 
+can be regarded as "working" in GXemul. The first guest operating 
+system that worked in GXemul was
+<a href="guestoses.html#netbsdpmaxinstall">NetBSD/pmax</a>, and that is
+still one of the guest OSes that works best.
+
+
+
+<p><br>The most important change between release 0.6.0.2 and 0.6.1 is:
+
+<!--
+<p>Old framework:
+-->
+<ul>
+	<li><b>SGI O2 emulation (in the Old framework):</b>
+	<ul>
+		<li>Graphical framebuffer:
+		Previously, only serial console was possible when
+		running NetBSD/sgimips as a guest OS, but now it is
+		also possible to use graphical framebuffer for both
+		text console and for X11.
+
+		<li>OpenBSD/sgi has been moved from "unsupported" to
+		supported.
+	</ul>
+</ul>
+
+<!--
+<p>New framework:
+<ul>
+	<li>...
+</ul>
+-->
+
+
+<p><br>Please read the HISTORY file for more details.
+
+<p>To build the emulator, run the <tt>configure</tt> script, and then run 
+<tt>make</tt>. This should hopefully work on most Unix-like systems, with few
+or no modifications to the source code.
+
+<p>Regarding files in the <tt>src/include/thirdparty/</tt> directory:
+most of these are from other open source projects such as NetBSD. See individual
+source files for details, if you plan to redistribute GXemul in binary form,
+or reuse the source code.
+
+<p>GXemul's homepage is
+<a href="http://gavare.se/gxemul/">http://gavare.se/gxemul/</a>.
+
+
+
+</body>
+</html>
+
