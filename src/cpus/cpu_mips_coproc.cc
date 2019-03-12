@@ -61,6 +61,10 @@ static void initialize_cop0_config(struct cpu *cpu, struct mips_coproc *c)
 {
 	const int m16 = 0;	/*  TODO: MIPS16 support  */
 	int IB, DB, SB, IC, DC, SC, IA, DA;
+	// imzhwk: make things work
+	// disable ebase at first, only open it if it's our R6K
+	c->EBase = 0x80000000;
+	c->enable_ebase = 0;
 
 	/*  Generic case for MIPS32/64:  */
 	if (cpu->cd.mips.cpu_type.isa_level == 32 ||
@@ -113,9 +117,11 @@ static void initialize_cop0_config(struct cpu *cpu, struct mips_coproc *c)
 	switch (cpu->cd.mips.cpu_type.rev) {
 	case MIPS_R2000:
 	case MIPS_R3000:
+		/*  No config register.  */
+		break;
 	case MIPS_R6000:
 		/* imzhwk: madifications made to let R6000 JUST WORK!*/
-		/*  No config register.  */
+		c->enable_ebase = 1;
 		break;
 	case MIPS_R4000:	/*  according to the R4000 manual  */
 	case MIPS_R4600:
@@ -669,6 +675,7 @@ void coproc_register_write(struct cpu *cpu,
 	int inval = 0;
 	unsigned int old_asid;
 	uint64_t oldmode;
+	int prevent_wr = 0;
 
 	switch (cp->coproc_nr) {
 	case 0:
@@ -858,7 +865,16 @@ void coproc_register_write(struct cpu *cpu,
 			unimpl = 0;
 			break;
 		case COP0_PRID:
-			readonly = 1;
+			if (select == 1){
+				// imzhwk: implement the EBase Writer!
+				fatal("[ EMULATOR: EBase written with %x ]\n",
+				tmp);
+				cpu->cd.mips.coproc[0]->EBase = tmp;
+				cpu->cd.mips.coproc[0]->enable_ebase = 1;
+				prevent_wr = 1; // prevent assignment
+			} else {
+				readonly = 1;
+			}
 			break;
 		case COP0_CONFIG:
 			if (select > 0) {
@@ -971,7 +987,11 @@ void coproc_register_write(struct cpu *cpu,
 		return;
 	}
 
-	cp->reg[reg_nr] = tmp;
+	if(!prevent_wr){
+		cp->reg[reg_nr] = tmp;
+	} else {
+		return;
+	}
 
 	if (!flag64)
 		cp->reg[reg_nr] = (int64_t)(int32_t)cp->reg[reg_nr];

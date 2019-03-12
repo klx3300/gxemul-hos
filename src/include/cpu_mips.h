@@ -104,6 +104,8 @@ struct mips_coproc {
 	/*  Only for COP0:  */
 	struct mips_tlb	*tlbs;
 	int		nr_of_tlbs;
+	uint32_t EBase;
+	int enable_ebase;
 
 	/*  Only for COP1:  floating point control registers  */
 	/*  (Maybe also for COP0?)  */

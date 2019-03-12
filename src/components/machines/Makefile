@@ -6,7 +6,7 @@
 XINCLUDE=-I/usr/X11R6/include
 XLIB=-L/usr/X11R6/lib -lX11
 CWARNINGS=-Wshadow -Wcast-align -Wnon-virtual-dtor -Wstrict-aliasing -Wall  -Wextra -Wno-unused-parameter
-COPTIM=-fno-rtti -fstrict-aliasing -fomit-frame-pointer -fpeephole -O3 -DNDEBUG 
+COPTIM=-g -fno-rtti -fstrict-aliasing -fomit-frame-pointer -fpeephole -O3 -DNDEBUG 
 INCLUDE=-Iinclude/
 DINCLUDE=-I../include/
 INCLUDE2=-I../../include/

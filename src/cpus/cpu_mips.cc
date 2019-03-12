@@ -1721,6 +1721,7 @@ void mips_cpu_exception(struct cpu *cpu, int exccode, int tlb, uint64_t vaddr,
 {
 	uint64_t base;
 	uint64_t *reg = &cpu->cd.mips.coproc[0]->reg[0];
+	uint32_t cp0ebase = cpu->cd.mips.coproc[0]->EBase;
 	int exc_model = cpu->cd.mips.cpu_type.exc_model;
 
 	if (cpu->is_halted) {
@@ -1912,10 +1913,17 @@ void mips_cpu_exception(struct cpu *cpu, int exccode, int tlb, uint64_t vaddr,
 		cpu->delay_slot = NOT_DELAYED;
 
 	/*  TODO: This is true for MIPS64, but how about others?  */
+	// fatal("[ EMULATOR DEBUG: Exception EBase Enabling: %d ]\n", 
+	// 	cpu->cd.mips.coproc[0]->enable_ebase);
 	if (reg[COP0_STATUS] & STATUS_BEV)
 		base = 0xffffffffbfc00200ULL;
-	else
+	else if (cpu->cd.mips.coproc[0]->enable_ebase){
+		// imzhwk: now we get ebase into exc vectoring.
+		base = 0xffffffff00000000ULL + ((unsigned long long)(cp0ebase));
+		// fatal("[ EMULATOR DEBUG: Exception Base Vector %llx ]\n", base);
+	} else {
 		base = 0xffffffff80000000ULL;
+	}
 
 	switch (exc_model) {
 	case EXC3K:
