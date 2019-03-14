@@ -3514,7 +3514,7 @@ X(to_be_translated)
 		if (!cpu->memory_rw(cpu, cpu->mem, addr, ib,
 		    sizeof(ib), MEM_READ, CACHE_INSTRUCTION)) {
 			fatal("to_be_translated(): read failed: TODO\n");
-			goto bad;
+			goto mips_bad;
 		}
 	}
 
@@ -3630,10 +3630,10 @@ X(to_be_translated)
 					case SPECIAL_SRL:	/*  ror (aka. rotr?) */
 						ic->f = instr(ror);
 						break;
-					default:goto bad;
+					default:goto mips_bad;
 					}
 					break;
-				default:goto bad;
+				default:goto mips_bad;
 				}
 			}
 			if (sa < 0 && (s10 & 0x1f) != 0) {
@@ -3645,7 +3645,7 @@ X(to_be_translated)
 						ic->f = instr(rorv);
 					}
 					break;
-				default:goto bad;
+				default:goto mips_bad;
 				}
 				break;
 			}
@@ -3777,7 +3777,7 @@ X(to_be_translated)
 				if (rd != MIPS_GPR_ZERO) {
 					if (!cpu->translation_readahead)
 						fatal("TODO: rd NON-zero\n");
-					goto bad;
+					goto mips_bad;
 				}
 				/*  These instructions don't use rd.  */
 				break;
@@ -3830,7 +3830,7 @@ X(to_be_translated)
 				if (!cpu->translation_readahead)
 					fatal("TODO: branch in delay "
 					    "slot? (1)\n");
-				goto bad;
+				goto mips_bad;
 			}
 			break;
 
@@ -3856,7 +3856,7 @@ X(to_be_translated)
 			ic->f = instr(nop);
 			break;
 
-		default:goto bad;
+		default:goto mips_bad;
 		}
 		break;
 
@@ -3929,7 +3929,7 @@ X(to_be_translated)
 		if (cpu->delay_slot) {
 			if (!cpu->translation_readahead)
 				fatal("TODO: branch in delay slot? (2)\n");
-			goto bad;
+			goto mips_bad;
 		}
 		break;
 
@@ -4017,7 +4017,7 @@ X(to_be_translated)
 				fatal("TODO: branch in delay slot (=%i)? (3);"
 				    " addr=%016" PRIx64" iword=%08" PRIx32"\n",
 				    cpu->delay_slot, (uint64_t)addr, iword);
-			goto bad;
+			goto mips_bad;
 		}
 		break;
 
@@ -4082,7 +4082,7 @@ X(to_be_translated)
 				break;
 			case COP0_HIBERNATE:
 				/*  TODO  */
-				goto bad;
+				goto mips_bad;
 			case COP0_SUSPEND:
 				/*  Used by NetBSD on HPCmips (VR41xx) to
 				    halt the machine.  */
@@ -4092,18 +4092,18 @@ X(to_be_translated)
 				if (cpu->cd.mips.cpu_type.rev == MIPS_R5900) {
 					ic->f = instr(ei_r5900);
 				} else
-					goto bad;
+					goto mips_bad;
 				break;
 			case COP0_DI:
 				if (cpu->cd.mips.cpu_type.rev == MIPS_R5900) {
 					ic->f = instr(di_r5900);
 				} else
-					goto bad;
+					goto mips_bad;
 				break;
 			default:if (!cpu->translation_readahead)
 					fatal("UNIMPLEMENTED cop0 (func "
 					    "0x%02x)\n", iword & 0xff);
-				goto bad;
+				goto mips_bad;
 			}
 			break;
 		}
@@ -4176,7 +4176,7 @@ X(to_be_translated)
 			} else {
 				if (!cpu->translation_readahead)
 					fatal("Unimplemented COP0_MFMCz\n");
-				goto bad;
+				goto mips_bad;
 			}
 			break;
 		case COPz_BCzc:
@@ -4186,13 +4186,13 @@ X(to_be_translated)
 			} else {
 				if (!cpu->translation_readahead)
 					fatal("Unimplemented COP0_BCzc\n");
-				goto bad;
+				goto mips_bad;
 			}
 			break;
 		
 		default:if (!cpu->translation_readahead)
 				fatal("UNIMPLEMENTED cop0 (rs = %i)\n", rs);
-			goto bad;
+			goto mips_bad;
 		}
 		break;
 
@@ -4220,7 +4220,7 @@ X(to_be_translated)
 			if (cpu->delay_slot) {
 				if (!cpu->translation_readahead)
 					fatal("TODO: branch in delay slot 4\n");
-				goto bad;
+				goto mips_bad;
 			}
 			if (cpu->cd.mips.cpu_type.isa_level <= 3 &&
 			    ic->arg[0] != 0) {
@@ -4230,7 +4230,7 @@ X(to_be_translated)
 					    "%i cpu. TODO: How should this be "
 					    "handled?\n",
 					    cpu->cd.mips.cpu_type.isa_level);
-				goto bad;
+				goto mips_bad;
 			}
 
 			break;
@@ -4256,7 +4256,7 @@ X(to_be_translated)
 
 		default:if (!cpu->translation_readahead)
 			    fatal("COP1 floating point opcode = 0x%02x\n", rs);
-			goto bad;
+			goto mips_bad;
 		}
 		break;
 
@@ -4270,7 +4270,7 @@ X(to_be_translated)
 		}
 		if (!cpu->translation_readahead)
 			fatal("COP2 functionality not yet implemented\n");
-		goto bad;
+		goto mips_bad;
 		break;
 
 	case HI6_COP3:
@@ -4289,7 +4289,7 @@ X(to_be_translated)
 		} else {
 			if (!cpu->translation_readahead)
 				fatal("COP3 iword=0x%08x\n", iword);
-			goto bad;
+			goto mips_bad;
 		}
 		break;
 
@@ -4333,7 +4333,7 @@ X(to_be_translated)
 						ic->f = instr(pextlw);
 					break;
 
-				default:goto bad;
+				default:goto mips_bad;
 				}
 				break;
 
@@ -4350,11 +4350,11 @@ X(to_be_translated)
 						ic->f = instr(por);
 					break;
 
-				default:goto bad;
+				default:goto mips_bad;
 				}
 				break;
 
-			default:goto bad;
+			default:goto mips_bad;
 			}
 			break;
 		}
@@ -4408,7 +4408,7 @@ X(to_be_translated)
 				ic->f = instr(nop);
 			break;
 
-		default:goto bad;
+		default:goto mips_bad;
 		}
 		break;
 
@@ -4474,13 +4474,13 @@ X(to_be_translated)
 			if (cpu->delay_slot) {
 				if (!cpu->translation_readahead)
 					fatal("TODO: branch in delay slot:5\n");
-				goto bad;
+				goto mips_bad;
 			}
 			break;
 
 		default:if (!cpu->translation_readahead)
 				fatal("UNIMPLEMENTED regimm rt=%i\n", rt);
-			goto bad;
+			goto mips_bad;
 		}
 		break;
 
@@ -4561,7 +4561,7 @@ X(to_be_translated)
 		if (!store && rt == MIPS_GPR_ZERO) {
 			if (!cpu->translation_readahead)
 				fatal("HM... unusual load linked\n");
-			goto bad;
+			goto mips_bad;
 		}
 		break;
 
@@ -4632,7 +4632,7 @@ X(to_be_translated)
 		} else {
 			if (!cpu->translation_readahead)
 				fatal("TODO: lwc3 not implemented yet\n");
-			goto bad;
+			goto mips_bad;
 		}
 		break;
 
@@ -4640,20 +4640,20 @@ X(to_be_translated)
 		if (cpu->cd.mips.cpu_type.rev == MIPS_R5900) {
 			if (!cpu->translation_readahead)
 				fatal("TODO: R5900 128-bit loads\n");
-			goto bad;
+			goto mips_bad;
 		}
 
 		if (!cpu->translation_readahead)
 			fatal("TODO: MDMX\n");
 
-		goto bad;
+		goto mips_bad;
 		/*  break  */
 
 	case HI6_SQ_SPECIAL3:
 		if (cpu->cd.mips.cpu_type.rev == MIPS_R5900) {
 			if (!cpu->translation_readahead)
 				fatal("TODO: R5900 128-bit stores\n");
-			goto bad;
+			goto mips_bad;
 		}
 
 		if (cpu->cd.mips.cpu_type.isa_level < 32 ||
@@ -4731,7 +4731,7 @@ X(to_be_translated)
 			case BSHFL_SEH:
 				ic->f = instr(seh);
 				break;
-			default:goto bad;
+			default:goto mips_bad;
 			}
 			break;
 
@@ -4745,7 +4745,7 @@ X(to_be_translated)
 			case BSHFL_DSHD:
 				ic->f = instr(dshd);
 				break;
-			default:goto bad;
+			default:goto mips_bad;
 			}
 			break;
 
@@ -4770,11 +4770,11 @@ X(to_be_translated)
 			default:if (!cpu->translation_readahead)
 					fatal("unimplemented rdhwr "
 					    "register rd=%i\n", rd);
-				goto bad;
+				goto mips_bad;
 			}
 			break;
 
-		default:goto bad;
+		default:goto mips_bad;
 		}
 		break;
 
@@ -4783,7 +4783,7 @@ X(to_be_translated)
 		ic->f = instr(cache);
 		break;
 
-	default:goto bad;
+	default: ic->f = instr(reserved);
 	}
 
 
@@ -4797,7 +4797,7 @@ X(to_be_translated)
 			has_warned = 1;
 		}
 		if (cpu->translation_readahead)
-			goto bad;
+			goto mips_bad;
 		else
 			ic->f = instr(reserved);
 	}
@@ -4806,8 +4806,10 @@ X(to_be_translated)
 #endif
 
 
+#define TRANSLATING_MIPS
 #define	DYNTRANS_TO_BE_TRANSLATED_TAIL
 #include "cpu_dyntrans.cc" 
 #undef	DYNTRANS_TO_BE_TRANSLATED_TAIL
+#undef TRANSLATING_MIPS
 }
 

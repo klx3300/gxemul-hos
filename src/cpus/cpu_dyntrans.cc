@@ -1771,6 +1771,7 @@ cpu->cd.DYNTRANS_ARCH.vph_tlb_entry[r].valid);
 	 *  the page as containing a translation at this part of the page.
 	 */
 
+
 	/*  Make sure cur_physpage is in synch:  */
 	cpu->cd.DYNTRANS_ARCH.cur_physpage = (struct DYNTRANS_TC_PHYSPAGE *)
 	    cpu->cd.DYNTRANS_ARCH.cur_ic_page;
@@ -1797,8 +1798,7 @@ cpu->cd.DYNTRANS_ARCH.vph_tlb_entry[r].valid);
 	 *  boundary.
 	 */
 	if (!single_step && !cpu->machine->instruction_trace
-#ifdef DYNTRANS_DELAYSLOT
-	    && !in_crosspage_delayslot
+#ifdef DYNTRANS_DELAYSLOT && !in_crosspage_delayslot
 #endif
 	    && cpu->cd.DYNTRANS_ARCH.combination_check != NULL
 	    && cpu->machine->allow_instruction_combinations) {
@@ -1890,6 +1890,9 @@ cpu->cd.DYNTRANS_ARCH.vph_tlb_entry[r].valid);
 	return;
 
 
+#ifdef TRANSLATING_MIPS
+mips_bad:
+#endif
 bad:	/*
 	 *  Nothing was translated. (Unimplemented or illegal instruction.)
 	 */
