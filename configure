@@ -138,6 +138,9 @@ if [ z"$*" != z ]; then
 	done
 fi
 
+# Forcefully disable valgrind to prevent unecessary checks.
+DISABLEVALGRIND=YES
+
 
 ###############################################################################
 #
